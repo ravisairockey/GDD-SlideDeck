@@ -3,392 +3,657 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLOODRUSH - Game Pitch Deck</title>
+    <title>BLOODRUSH: A Descent into Madness - GDD</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap">
     <style>
-        body, html {
+        :root {
+            --blood-red: #8a0303;
+            --dark-red: #3a0000;
+            --asylum-gray: #1a1a1a;
+            --text-light: #e0e0e0;
+            --glitch-blue: #0ff0fc;
+            --glitch-pink: #ff00ff;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: 'Arial', sans-serif;
-            background: #000;
-            color: #fff;
-            overflow: hidden;
-            font-family: 'Bebas Neue', 'Impact', sans-serif;
+            box-sizing: border-box;
         }
-        
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-        
-        .slide {
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: var(--asylum-gray);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(138, 3, 3, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(138, 3, 3, 0.1) 0%, transparent 20%);
+        }
+
+        /* Blood droplet animation */
+        @keyframes blood-fall {
+            0% { 
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { 
+                opacity: 0.8;
+            }
+            90% { 
+                opacity: 0.8;
+            }
+            100% { 
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .blood-droplet {
+            position: fixed;
+            top: 0;
+            width: 8px;
+            height: 8px;
+            background: var(--blood-red);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            animation: blood-fall 3s linear infinite;
+            filter: drop-shadow(0 0 2px rgba(138, 3, 3, 0.7));
+        }
+
+        /* Blood splatter effect */
+        .blood-splatter {
+            position: absolute;
             width: 100%;
-            height: 100vh;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="rgba(138,3,3,0.7)" d="M20,30 Q30,10 40,30 T60,30 T80,30 Q90,50 80,70 T60,70 T40,70 Q30,90 20,70 Z"/></svg>');
+            background-repeat: no-repeat;
+            background-size: 30px 30px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .gore-trigger:hover .blood-splatter {
+            opacity: 1;
+        }
+
+        /* Gore-specific hover effects */
+        .pillar-card:nth-child(1):hover, 
+        .feature-item:nth-child(3):hover {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card:nth-child(1):hover::after, 
+        .feature-item:nth-child(3):hover::after {
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path fill="rgba(138,3,3,0.1)" d="M30,20 Q10,30 30,40 T30,60 T30,80 Q50,90 70,80 T70,60 T70,40 Q90,30 70,20 Z"/></svg>');
+            background-repeat: no-repeat;
+            background-size: 100px 100px;
+            animation: splatter-pulse 0.5s linear;
+            pointer-events: none;
+        }
+
+        @keyframes splatter-pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Glitch effect for headers */
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--glitch-blue); }
+            2% { text-shadow: -2px 0 var(--glitch-pink); }
+            4% { text-shadow: 2px 0 var(--glitch-blue); }
+            6% { text-shadow: 0 0 transparent; }
+            100% { text-shadow: 0 0 transparent; }
+        }
+
+        header {
+            position: relative;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            padding: 20px;
-            box-sizing: border-box;
-            background-size: cover;
-            background-position: center;
-            background-color: #111;
+            padding: 2rem;
+            overflow: hidden;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('https://images.unsplash.com/photo-1506816561089-5cc37c196a97?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
         }
-        
-        .slide.active {
-            opacity: 1;
-            z-index: 1;
-        }
-        
-        h1 {
-            font-size: 5em;
-            margin: 0;
-            text-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
-            font-weight: 900;
-            letter-spacing: -2px;
-            margin-bottom: 20px;
-        }
-        
-        h2 {
-            font-size: 2.5em;
-            margin: 10px 0 30px;
-            color: #ff5555;
-            text-shadow: 0 0 10px #ff0000;
-        }
-        
-        .content {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 40px;
-            border-radius: 10px;
-            max-width: 80%;
-            border: 2px solid #ff0000;
-            box-shadow: 0 0 30px #ff0000;
-        }
-        
-        ul {
-            text-align: left;
-            max-width: 700px;
-            font-size: 1.4em;
-            line-height: 1.6;
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        li {
-            margin-bottom: 25px;
+
+        .title-container {
             position: relative;
-            padding-left: 40px;
+            z-index: 2;
         }
-        
-        li:before {
-            content: "•";
-            color: #ff0000;
-            font-size: 2em;
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 6rem;
+            color: var(--blood-red);
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 0 #000;
+            transition: all 0.3s ease;
+        }
+
+        h1:hover {
+            animation: glitch 0.5s linear infinite;
+        }
+
+        .subtitle {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            letter-spacing: 0.3rem;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .caption {
+            max-width: 800px;
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-left: 4px solid var(--blood-red);
+            position: relative;
+        }
+
+        .caption::after {
+            content: "";
             position: absolute;
+            bottom: 0;
             left: 0;
-            top: -10px;
-        }
-        
-        .controls {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            display: flex;
-        }
-        
-        button {
-            background: #ff0000;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            margin: 0 10px;
-            cursor: pointer;
-            font-size: 1.2em;
-            border-radius: 5px;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            background: #ff3333;
-            transform: scale(1.05);
-        }
-        
-        .pillar-container {
-            display: flex;
-            justify-content: space-around;
             width: 100%;
-            margin-top: 30px;
+            height: 2px;
+            background: var(--blood-red);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
         }
-        
-        .pillar {
-            width: 30%;
-            background: rgba(20, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #ff0000;
+
+        .caption:hover::after {
+            transform: scaleX(1);
         }
-        
-        .pillar h3 {
-            color: #ff5555;
-            font-size: 1.8em;
-            border-bottom: 2px solid #ff0000;
-            padding-bottom: 10px;
-        }
-        
-        .gameplay-loop {
+
+        .scroll-down {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-light);
+            font-size: 1.2rem;
+            text-decoration: none;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            margin: 30px 0;
+            opacity: 0.8;
+            transition: all 0.3s ease;
         }
-        
-        .gameplay-step {
-            margin: 0 20px;
-            text-align: center;
+
+        .scroll-down:hover {
+            opacity: 1;
+            color: var(--blood-red);
         }
-        
-        .gameplay-step img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
+
+        .scroll-down::after {
+            content: "";
+            display: block;
+            width: 1px;
+            height: 50px;
+            background: var(--blood-red);
+            margin-top: 1rem;
+            animation: pulse 2s infinite;
         }
-        
-        .arrow {
-            font-size: 2em;
-            color: #ff0000;
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
         }
-        
-        .character-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 30px;
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
         }
-        
-        .character {
-            background: rgba(20, 0, 0, 0.7);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #ff0000;
+
+        section {
+            margin-bottom: 5rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
         }
-        
-        .character img {
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            color: var(--blood-red);
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
             width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blood-red), transparent);
         }
-        
-        .footer-note {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            font-size: 0.8em;
-            color: #555;
-            z-index: 100;
+
+        h3 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2rem;
+            color: var(--text-light);
+            margin: 2rem 0 1rem;
+            border-left: 3px solid var(--blood-red);
+            padding-left: 1rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        ul {
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+
+        li::before {
+            content: "■";
+            color: var(--blood-red);
+            position: absolute;
+            left: -1.5rem;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .pillar-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid var(--dark-red);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(138, 3, 3, 0.3);
+        }
+
+        .pillar-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138, 3, 3, 0.1), transparent);
+            z-index: -1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .feature-item {
+            background: rgba(58, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-left: 3px solid var(--blood-red);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(58, 0, 0, 0.5);
+            transform: scale(1.02);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--dark-red);
+            position: relative;
+        }
+
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
+        }
+
+        .back-to-top {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: var(--blood-red);
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover {
+            background: #6a0202;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 4rem;
+            }
+            
+            .subtitle {
+                font-size: 1.5rem;
+            }
+            
+            .caption {
+                font-size: 1.2rem;
+            }
+            
+            .pillars-grid, .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Slide 1: Title Slide -->
-    <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
+    <!-- Enhanced blood droplets -->
+    <div class="blood-droplet" style="left: 15%; animation-delay: 0.3s;"></div>
+    <div class="blood-droplet" style="left: 35%; animation-delay: 1.1s;"></div>
+    <div class="blood-droplet" style="left: 55%; animation-delay: 2.3s; width: 10px; height: 10px;"></div>
+    <div class="blood-droplet" style="left: 75%; animation-delay: 0.9s;"></div>
+    <div class="blood-droplet" style="left: 90%; animation-delay: 1.7s; width: 6px; height: 6px;"></div>
+
+    <header>
+        <div class="title-container">
             <h1>BLOODRUSH</h1>
-            <h2>Survive the Madness. Feed the Urge.</h2>
-            <p style="font-size: 1.5em; max-width: 600px; margin: 0 auto;">A visceral action RPG where killing isn't just an option - it's survival</p>
+            <div class="subtitle">A Descent into Madness</div>
+            <div class="caption">
+                Kill to survive. Hesitate to die. In a deranged asylum, your sanity slips with every second—only bloodshed keeps the madness at bay. Will you escape the experiments, or will the Urge claim you?
+            </div>
         </div>
-        <div class="footer-note">Educational/non-commercial use only. Images from Unsplash/Pixabay.</div>
-    </div>
+        <a href="#game-summary" class="scroll-down">Scroll Down</a>
+    </header>
 
-    <!-- Slide 2: Game Summary -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>ESCAPE OR DIE TRYING</h2>
+    <main>
+        <section id="game-summary">
+            <h2>Game Summary</h2>
+            <p>BLOODRUSH is a visceral single-player action RPG where the player assumes the role of a tortured test subject in a deranged asylum. Infused with uncontrollable rage from unethical experiments, the protagonist must fight to escape, tearing through enemies using brutal melee and ranged weapons. The core hook? A unique "Urge Meter" that punishes inaction — the longer you go without killing, the closer you are to self-destruction.</p>
+        </section>
+
+        <section id="design-pillars">
+            <h2>Game Design Pillars</h2>
+            <div class="pillars-grid">
+                <div class="pillar-card gore-trigger" style="position: relative;">
+                    <div class="blood-splatter" style="background-position: 20% 30%;"></div>
+                    <div class="blood-splatter" style="background-position: 70% 60%; transform: rotate(45deg);"></div>
+                    <h3>Visceral Combat and Gore</h3>
+                    <p>Every encounter is brutal and rewarding. Satisfying melee and ranged attacks are amplified with over-the-top gore and physics-driven effects to create an intense, physical gameplay loop.</p>
+                </div>
+                <div class="pillar-card">
+                    <h3>Urgency Through Mechanics</h3>
+                    <p>The "Urge Meter" forces players into a constant state of motion and violence. This innovative feature increases tension, encourages aggression, and ties narrative to gameplay.</p>
+                </div>
+                <div class="pillar-card">
+                    <h3>Psychological Asylum Narrative</h3>
+                    <p>A twisted, linear story unfolds as the player fights their way out of a nightmarish facility. Dark environments, eerie audio, and unsettling visuals enhance the narrative of madness and revenge.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="user-experiences">
+            <h2>User Experiences</h2>
+            <p>Players should come away from BLOODRUSH saying:</p>
             <ul>
-                <li>Play as <strong>Subject 17</strong>, a tortured test subject infused with uncontrollable rage</li>
-                <li>Brutal combat meets psychological horror in a deranged asylum</li>
-                <li><strong>Core Mechanic:</strong> The <span style="color: #ff0000;">Urge Meter</span> - kill to survive or succumb to madness</li>
-                <li>Linear narrative with escalating horror and revelations</li>
+                <li>"It kept me on edge the entire time."</li>
+                <li>"The Urge Meter is such a cool idea — it made every kill feel like a necessity."</li>
+                <li>"The gore and combat were sick — in the best way."</li>
             </ul>
-        </div>
-    </div>
+            <p>They will be drawn in by the brutal action, relentless pacing, and the mystery of what happened in the asylum.</p>
+        </section>
 
-    <!-- Slide 3: Design Pillars -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1506816561089-5cc37c196aa5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>GAME DESIGN PILLARS</h2>
-            <div class="pillar-container">
-                <div class="pillar">
-                    <h3>VISERAL COMBAT</h3>
-                    <p>Physics-driven gore system with brutal melee and ranged options. Every hit feels impactful and devastating.</p>
-                </div>
-                <div class="pillar">
-                    <h3>URGENCY MECHANICS</h3>
-                    <p>The Urge Meter forces constant aggression - hesitate and you'll self-destruct from built-up rage.</p>
-                </div>
-                <div class="pillar">
-                    <h3>PSYCHOLOGICAL HORROR</h3>
-                    <p>A twisted narrative of experimentation and revenge, told through environmental storytelling.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+        <section id="core-gameplay">
+            <h2>Core Gameplay</h2>
+            <h3>Aim of the Game</h3>
+            <p>BLOODRUSH throws players into the mind of a broken soul — an experiment gone wrong inside a nightmarish asylum. The core gameplay revolves around violent survival, where players must jump, strike, shoot, and slay their way through twisted foes in claustrophobic, gore-filled environments. Every kill matters — not just to clear the path forward, but to keep the player alive by resetting their ever-building "Urge Meter."</p>
+            <p>The player's ultimate goal is to escape the asylum — but doing so requires mastering both instinct and strategy. Inaction leads to death by one's own hand, driven by madness. The game is built on fast-paced, visceral action and a relentless internal struggle that reflects the horrors of psychological trauma.</p>
+            <p>With stylized gore, intense combat, and an innovative urgency mechanic, BLOODRUSH is an experience designed for fans of gritty action RPGs who crave adrenaline, challenge, and narrative depth.</p>
+        </section>
 
-    <!-- Slide 4: Core Gameplay Loop -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513828583688-c52646db42da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>CORE GAMEPLAY LOOP</h2>
-            <div class="gameplay-loop">
-                <div class="gameplay-step">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2455/2455303.png" alt="Combat">
-                    <p>Engage in brutal combat</p>
-                </div>
-                <div class="arrow">→</div>
-                <div class="gameplay-step">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2455/2455306.png" alt="Kill">
-                    <p>Kill enemies to reset Urge Meter</p>
-                </div>
-                <div class="arrow">→</div>
-                <div class="gameplay-step">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2455/2455318.png" alt="Progress">
-                    <p>Progress through asylum</p>
-                </div>
-                <div class="arrow">→</div>
-                <div class="gameplay-step">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2455/2455321.png" alt="Repeat">
-                    <p>Repeat or self-destruct</p>
-                </div>
-            </div>
-            <p style="margin-top: 30px; font-size: 1.3em;">Health-by-kill system rewards aggression while punishing hesitation</p>
-        </div>
-    </div>
-
-    <!-- Slide 5: Urge Meter -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>THE URGE METER</h2>
+        <section id="design-goals">
+            <h2>Game Design Goals</h2>
             <ul>
-                <li>Constantly fills over time - creates relentless tension</li>
-                <li>Resets with each kill - rewarding aggressive play</li>
-                <li>At 100%: Screen distorts, controls invert, health drains</li>
-                <li>Final stage: Instant self-destruction if not reset</li>
+                <li><strong>Deliver a Visceral, Rewarding Combat Loop:</strong> Design fluid, impactful combat combining ranged weapons, melee tools, and brutal finishers. Every weapon should feel distinct and satisfying, amplifying the chaos and gore of each fight.</li>
+                <li><strong>Innovative Survival Mechanic: The Urge Meter:</strong> Introduce a unique urgency system where players must kill to survive. This mechanic creates constant tension and feeds into the protagonist's mental descent — aligning gameplay with narrative.</li>
+                <li><strong>Emotionally Charged, Psychological Narrative:</strong> Build a story that dives into madness, experimentation, and revenge. The player's journey should evoke fear, anger, empowerment, and ultimately, liberation.</li>
+                <li><strong>High-Quality Visuals and Atmosphere:</strong> Craft environments rich in horror aesthetic — flickering lights, blood-drenched halls, and disturbing audio cues that enhance immersion and dread.</li>
+                <li><strong>Focused Accessibility and Pacing:</strong> Streamline controls and UI for clarity and immersion. Include scalable difficulty and tutorial guidance to welcome a broader range of players while keeping the hardcore challenge intact.</li>
+                <li><strong>Linear but Impactful Progression:</strong> Use a structured narrative path to create high-intensity moments and paced escalation. Ensure each level introduces new elements — enemies, weapons, or lore — to maintain forward momentum.</li>
+                <li><strong>Replay Value through Mastery:</strong> Encourage replays with unlockable weapons, higher difficulties, and alternate escape routes. Give players reasons to dive back in and perfect their runs.</li>
             </ul>
-            <div style="margin-top: 30px; width: 80%; height: 30px; background: #333; border-radius: 15px; overflow: hidden;">
-                <div style="width: 75%; height: 100%; background: linear-gradient(to right, #ff0000, #ff5555); border-radius: 15px;"></div>
-            </div>
-            <p style="margin-top: 10px;">Current Urge Meter: 75% - Danger Zone</p>
-        </div>
-    </div>
+        </section>
 
-    <!-- Slide 6: Characters -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1504439468489-c8920d796a29?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>KEY CHARACTERS</h2>
-            <div class="character-grid">
-                <div class="character">
-                    <img src="https://images.unsplash.com/photo-1547721064-da6cfb341d50?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Subject 17">
-                    <h3>SUBJECT 17</h3>
-                    <p>The player character - an experiment gone wrong with uncontrollable rage</p>
+        <section id="features">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">Urge Meter System</div>
+                <div class="feature-item">Weapon Variety</div>
+                <div class="feature-item gore-trigger" style="position: relative;">
+                    <div class="blood-splatter" style="background-position: 80% 20%; transform: scale(1.3);"></div>
+                    Brutal Finishing Moves
                 </div>
-                <div class="character">
-                    <img src="https://images.unsplash.com/photo-1551601651-bc60f254d532?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="The Doctor">
-                    <h3>THE DOCTOR</h3>
-                    <p>The mad scientist behind the experiments - your tormentor</p>
-                </div>
-                <div class="character">
-                    <img src="https://images.unsplash.com/photo-1549060279-7e168fcee0c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Other Subjects">
-                    <h3>OTHER SUBJECTS</h3>
-                    <p>Failed experiments turned violent enemies</p>
-                </div>
+                <div class="feature-item">Health-by-Kill Mechanic</div>
+                <div class="feature-item">Linear Level Progression</div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Slide 7: Levels -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1511499767150-a48a237f0083?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>ASYLUM LEVELS</h2>
+        <section id="player-mechanics">
+            <h2>Player Mechanics</h2>
             <ul>
-                <li><strong>Cell Block:</strong> Starting area - learn basic mechanics</li>
-                <li><strong>Morgue:</strong> First major horror set pieces</li>
-                <li><strong>Maintenance Wing:</strong> Environmental puzzles introduced</li>
-                <li><strong>Observation Halls:</strong> Story revelations</li>
-                <li><strong>The Core Lab:</strong> Final confrontation</li>
+                <li><strong>Movement:</strong> Walk, run, jump, crouch</li>
+                <li><strong>Combat:</strong> Melee (Knife, Saw), Ranged (Pistols, Shotguns)</li>
+                <li><strong>Urge Meter:</strong> Increases over time, resets with kills, maxing leads to negative effects</li>
+                <li><strong>Inventory:</strong> Limited slots</li>
             </ul>
-            <p style="margin-top: 30px; font-size: 1.3em;">Each level introduces new enemies, weapons, and story elements</p>
-        </div>
-    </div>
+        </section>
 
-    <!-- Slide 8: Player Experience -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1518709766630-a6a7f45921c3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h2>PLAYER EXPERIENCE</h2>
+        <section id="game-world">
+            <h2>Game World</h2>
             <ul>
-                <li><strong>Feelings:</strong> Tension, desperation, cathartic power</li>
+                <li><strong>Setting:</strong> An old, multi-level, abandoned asylum</li>
+                <li><strong>Style:</strong> Realistic horror aesthetic</li>
+                <li><strong>Atmosphere:</strong> Constant tension through ambient sounds and creepy visuals</li>
+            </ul>
+        </section>
+
+        <section id="characters">
+            <h2>Characters</h2>
+            <ul>
+                <li><strong>The Protagonist (Subject 17):</strong> A tortured test subject</li>
+                <li><strong>The Doctor:</strong> Antagonist and tormentor</li>
+                <li><strong>Other Subjects:</strong> Failed experiments turned enemies</li>
+            </ul>
+        </section>
+
+        <section id="enemies">
+            <h2>Enemies</h2>
+            <div class="features-grid">
+                <div class="feature-item">Grunts</div>
+                <div class="feature-item">Ragers</div>
+                <div class="feature-item">Crawlers</div>
+                <div class="feature-item">Security Units</div>
+                <div class="feature-item">Boss Mutants</div>
+            </div>
+        </section>
+
+        <section id="levels">
+            <h2>Levels</h2>
+            <ol style="list-style-type: none; counter-reset: level-counter;">
+                <li style="position: relative; padding-left: 2.5rem; margin-bottom: 1rem; counter-increment: level-counter;">
+                    <span style="position: absolute; left: 0; color: var(--blood-red); font-weight: bold;">1.</span> Cell Block
+                </li>
+                <li style="position: relative; padding-left: 2.5rem; margin-bottom: 1rem; counter-increment: level-counter;">
+                    <span style="position: absolute; left: 0; color: var(--blood-red); font-weight: bold;">2.</span> Morgue
+                </li>
+                <li style="position: relative; padding-left: 2.5rem; margin-bottom: 1rem; counter-increment: level-counter;">
+                    <span style="position: absolute; left: 0; color: var(--blood-red); font-weight: bold;">3.</span> Maintenance Wing
+                </li>
+                <li style="position: relative; padding-left: 2.5rem; margin-bottom: 1rem; counter-increment: level-counter;">
+                    <span style="position: absolute; left: 0; color: var(--blood-red); font-weight: bold;">4.</span> Observation Halls
+                </li>
+                <li style="position: relative; padding-left: 2.5rem; margin-bottom: 1rem; counter-increment: level-counter;">
+                    <span style="position: absolute; left: 0; color: var(--blood-red); font-weight: bold;">5.</span> The Core Lab
+                </li>
+            </ol>
+        </section>
+
+        <section id="ui">
+            <h2>User Interface</h2>
+            <ul>
+                <li><strong>HUD:</strong> Health, Urge Meter, Ammo</li>
+                <li><strong>Menus:</strong> Inventory, Pause, Settings</li>
+                <li><strong>Style:</strong> Bloody overlays and glitch effects</li>
+            </ul>
+        </section>
+
+        <section id="player-exp">
+            <h2>Player Experience</h2>
+            <ul>
+                <li><strong>Feelings:</strong> Tension, desperation, power</li>
                 <li><strong>Journey:</strong> From hunted to hunter</li>
-                <li><strong>Key Moments:</strong> First blackout, executing finishing moves, final escape</li>
-                <li><strong>Replay Value:</strong> Unlockable weapons, alternate routes, higher difficulties</li>
+                <li><strong>Drivers:</strong> Combat, visuals, story</li>
+                <li><strong>Moments:</strong> First blackout, finishing moves, final escape</li>
             </ul>
-            <div style="margin-top: 30px; font-size: 1.5em; color: #ff5555;">
-                "It kept me on edge the entire time."<br>
-                "The Urge Meter is genius - every kill felt necessary."<br>
-                "The gore and combat were sick - in the best way."
-            </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <!-- Slide 9: Closing -->
-    <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-blend-mode: overlay;">
-        <div class="content">
-            <h1>BLOODRUSH</h1>
-            <h2>Ready to Face Your Demons?</h2>
-            <p style="font-size: 1.5em; max-width: 600px; margin: 30px auto;">
-                A visceral action RPG for fans of brutal combat, psychological horror, and innovative mechanics
-            </p>
-            <div style="margin-top: 50px; font-size: 1.2em;">
-                <p>Student Project Presentation</p>
-                <p>Non-commercial Use</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button id="prevBtn">Previous</button>
-        <button id="nextBtn">Next</button>
-    </div>
+    <footer>
+        <p>BLOODRUSH: A Descent into Madness — Game Design Document</p>
+        <p>© 2023 Ravi Sai Vigneswara. All rights reserved.</p>
+        <a href="#" class="back-to-top">Back to Top</a>
+    </footer>
 
     <script>
-        const slides = document.querySelectorAll('.slide');
-        let currentSlide = 0;
-        
-        function showSlide(n) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (n + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
-        
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            showSlide(currentSlide + 1);
-        });
-        
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            showSlide(currentSlide - 1);
-        });
-        
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') {
-                showSlide(currentSlide + 1);
-            } else if (e.key === 'ArrowLeft') {
-                showSlide(currentSlide - 1);
+        // Enhanced blood droplet creation
+        function createBloodDroplets() {
+            const container = document.body;
+            for (let i = 0; i < 15; i++) {
+                const droplet = document.createElement('div');
+                droplet.className = 'blood-droplet';
+                droplet.style.left = Math.random() * 100 + '%';
+                droplet.style.animationDelay = Math.random() * 5 + 's';
+                droplet.style.width = (Math.random() * 6 + 4) + 'px';
+                droplet.style.height = droplet.style.width;
+                container.appendChild(droplet);
             }
+        }
+
+        // Dynamic blood splatter on gore elements
+        function addSplatterEffects() {
+            const goreElements = document.querySelectorAll('.gore-trigger');
+            
+            goreElements.forEach(element => {
+                // Add random splatter patterns
+                for (let i = 0; i < 3; i++) {
+                    const splatter = document.createElement('div');
+                    splatter.className = 'blood-splatter';
+                    splatter.style.left = Math.random() * 80 + '%';
+                    splatter.style.top = Math.random() * 80 + '%';
+                    splatter.style.transform = `rotate(${Math.random() * 360}deg) scale(${Math.random() * 0.5 + 0.8})`;
+                    element.appendChild(splatter);
+                }
+            });
+        }
+
+        // Scroll reveal animation
+        function scrollReveal() {
+            const sections = document.querySelectorAll('section');
+            const windowHeight = window.innerHeight;
+            const revealPoint = 150;
+
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < windowHeight - revealPoint) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+
+        // Smooth scrolling
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+
+        // Back to top button
+        function initBackToTop() {
+            const backToTop = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTop.style.opacity = '1';
+                    backToTop.style.visibility = 'visible';
+                } else {
+                    backToTop.style.opacity = '0';
+                    backToTop.style.visibility = 'hidden';
+                }
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createBloodDroplets();
+            addSplatterEffects();
+            initSmoothScroll();
+            initBackToTop();
+            window.addEventListener('scroll', scrollReveal);
+            scrollReveal(); // Run once on load
         });
     </script>
 </body>
